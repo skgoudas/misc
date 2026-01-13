@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPollById, getTotalVotesForPoll, createVote } from '@/lib/queries';
+import { getPollById, getVoteCountForNomination, createVote } from '@/lib/queries';
 
 export async function POST(request: Request) {
     try {
@@ -22,11 +22,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Poll not found' }, { status: 404 });
         }
 
-        const now = new Date();
-        const totalVotes = await getTotalVotesForPoll(pollId);
+        const candidateVotes = await getVoteCountForNomination(nominationId);
 
-        if (poll.maxVotes !== null && poll.maxVotes > 0 && totalVotes >= poll.maxVotes) {
-            return NextResponse.json({ error: 'Poll is closed (max votes reached)' }, { status: 403 });
+        if (poll.maxVotes !== null && poll.maxVotes > 0 && candidateVotes >= poll.maxVotes) {
+            return NextResponse.json({ error: 'Nomination has reached max votes' }, { status: 403 });
         }
 
         // Create vote

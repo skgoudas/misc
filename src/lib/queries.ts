@@ -145,6 +145,14 @@ export async function getTotalVotesForPoll(pollId: number): Promise<number> {
     return result.rows[0].count as number;
 }
 
+export async function getVoteCountForNomination(nominationId: number): Promise<number> {
+    const result = await db.execute({
+        sql: 'SELECT COUNT(*) as count FROM votes WHERE nomination_id = ?',
+        args: [nominationId]
+    });
+    return result.rows[0].count as number;
+}
+
 // Vote operations
 export async function createVote(pollId: number, nominationId: number, score: number) {
     const result = await db.execute({
