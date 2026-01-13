@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPollById, getNominationsByPollId, getNominationsWithStats, getTotalVotesForPoll, deletePoll, closePoll } from '@/lib/queries';
+import { getPollById, getNominationsByPollId, getNominationsWithStats, getTotalVotesForPoll, deletePoll } from '@/lib/queries';
 
 export async function GET(
     request: Request,
@@ -56,26 +56,7 @@ export async function GET(
     }
 }
 
-export async function PATCH(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await params;
-        const pollId = parseInt(id);
-        const body = await request.json();
 
-        if (body.action === 'close') {
-            await closePoll(pollId);
-            return NextResponse.json({ success: true, message: 'Poll closed' });
-        }
-
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-    } catch (error) {
-        console.error('Error updating poll:', error);
-        return NextResponse.json({ error: 'Failed to update poll' }, { status: 500 });
-    }
-}
 
 export async function DELETE(
     request: Request,

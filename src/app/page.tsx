@@ -45,28 +45,7 @@ export default function HomePage() {
         }
     };
 
-    const handleClose = async (id: number) => {
-        if (!confirm('Are you sure you want to close this poll? Voting will be stopped and results will be visible.')) {
-            return;
-        }
 
-        try {
-            const res = await fetch(`/api/poll/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'close' }),
-            });
-
-            if (!res.ok) throw new Error('Failed to close poll');
-
-            // Refresh polls list
-            fetchPolls();
-            alert('Poll closed successfully!');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to close poll');
-        }
-    };
 
     if (loading) {
         return (
@@ -156,31 +135,6 @@ export default function HomePage() {
                                 >
                                     Results
                                 </button>
-                                {poll.closedManually !== 1 && (
-                                    <button
-                                        onClick={() => handleClose(poll.id)}
-                                        style={{
-                                            background: 'transparent',
-                                            border: '1px solid #f59e0b',
-                                            color: '#f59e0b',
-                                            padding: '8px 16px',
-                                            borderRadius: '8px',
-                                            cursor: 'pointer',
-                                            fontWeight: 600,
-                                            transition: 'all 0.2s'
-                                        }}
-                                        onMouseOver={(e) => {
-                                            e.currentTarget.style.background = '#f59e0b';
-                                            e.currentTarget.style.color = 'white';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.currentTarget.style.background = 'transparent';
-                                            e.currentTarget.style.color = '#f59e0b';
-                                        }}
-                                    >
-                                        Close
-                                    </button>
-                                )}
                                 <button
                                     onClick={() => handleDelete(poll.id)}
                                     style={{

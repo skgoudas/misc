@@ -187,9 +187,4 @@ export async function deletePoll(id: number) {
     });
 }
 
-export async function closePoll(id: number) {
-    return await db.execute({
-        sql: 'UPDATE polls SET closed_manually = 1 WHERE id = ?',
-        args: [id]
-    });
-}
+
