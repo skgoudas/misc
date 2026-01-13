@@ -102,13 +102,13 @@ export default function CreatePollPage() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Max Votes (Cap)</label>
+                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Max Votes Per Candidate</label>
                             <input
                                 className="input-field"
                                 type="number"
                                 value={maxVotes}
                                 onChange={(e) => setMaxVotes(e.target.value)}
-                                placeholder="Total votes limit"
+                                placeholder="Votes limit per candidate"
                             />
                         </div>
                     </div>

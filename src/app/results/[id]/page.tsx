@@ -27,22 +27,6 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
     if (loading) return <div className="container" style={{ textAlign: 'center', marginTop: '100px' }}>Loading Results...</div>;
     if (!poll) return <div className="container" style={{ textAlign: 'center' }}>Poll not found</div>;
 
-    if (poll.status === 'OPEN') {
-        return (
-            <main className="container" style={{ textAlign: 'center', marginTop: '100px' }}>
-                <div className="glass-panel" style={{ padding: '40px' }}>
-                    <h1>Results Hidden</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>
-                        This poll is still OPEN. Results will be available once it closes.
-                    </p>
-                    <a href={`/vote/${poll.id}`} style={{ display: 'inline-block', marginTop: '20px', color: 'var(--primary)', textDecoration: 'underline' }}>
-                        Go to Voting Page
-                    </a>
-                </div>
-            </main>
-        );
-    }
-
     // Find max average for progress calculation
     const maxAvg = Math.max(...poll.nominations.map((n: any) => n.stats.average));
 

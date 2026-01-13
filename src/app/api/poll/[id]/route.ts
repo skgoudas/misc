@@ -24,27 +24,15 @@ export async function GET(
             isClosed = true;
         }
 
-        if (!isClosed) {
-            // Return poll data WITHOUT vote counts/scores
-            const nominations = await getNominationsByPollId(pollId);
+        // Return poll data WITH ranked results regardless of status
+        const rankedNominations = await getNominationsWithStats(pollId);
 
-            return NextResponse.json({
-                ...poll,
-                nominations,
-                status: 'OPEN',
-                totalVotes,
-            });
-        } else {
-            // Return poll data WITH ranked results
-            const rankedNominations = await getNominationsWithStats(pollId);
-
-            return NextResponse.json({
-                ...poll,
-                nominations: rankedNominations,
-                status: 'CLOSED',
-                totalVotes
-            });
-        }
+        return NextResponse.json({
+            ...poll,
+            nominations: rankedNominations,
+            status: isClosed ? 'CLOSED' : 'OPEN',
+            totalVotes
+        });
 
     } catch (error) {
         console.error('Error fetching poll:', error);

@@ -75,7 +75,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
                     onClick={() => router.push(`/results/${id}`)}
                     style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: 'var(--text-secondary)', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}
                 >
-                    View Results (Only if Closed)
+                    View Results
                 </button>
             </div>
         </main>
