@@ -25,9 +25,6 @@ export async function POST(request: Request) {
         const now = new Date();
         const totalVotes = await getTotalVotesForPoll(pollId);
 
-        if (poll.expiresAt && now > new Date(poll.expiresAt)) {
-            return NextResponse.json({ error: 'Poll is closed (expired)' }, { status: 403 });
-        }
         if (poll.maxVotes && totalVotes >= poll.maxVotes) {
             return NextResponse.json({ error: 'Poll is closed (max votes reached)' }, { status: 403 });
         }

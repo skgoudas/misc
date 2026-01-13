@@ -4,7 +4,7 @@ import { createPoll, createNomination, getPollById, getNominationsByPollId, getA
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { title, nominations, maxVotes, expiresAt } = body;
+        const { title, nominations, maxVotes } = body;
 
         // Basic validation
         if (!title || !nominations || !Array.isArray(nominations) || nominations.length === 0) {
@@ -14,8 +14,7 @@ export async function POST(request: Request) {
         // Create poll
         const pollId = await createPoll(
             title,
-            maxVotes ? parseInt(maxVotes) : null,
-            expiresAt || null
+            maxVotes ? parseInt(maxVotes) : null
         );
 
         // Create nominations

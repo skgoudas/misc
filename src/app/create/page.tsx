@@ -7,7 +7,7 @@ export default function CreatePollPage() {
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [maxVotes, setMaxVotes] = useState('');
-    const [expiresAt, setExpiresAt] = useState('');
+
     const [nominations, setNominations] = useState([{ name: '', manager: '' }]);
     const [loading, setLoading] = useState(false);
 
@@ -46,7 +46,6 @@ export default function CreatePollPage() {
                 body: JSON.stringify({
                     title,
                     maxVotes,
-                    expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
                     nominations: validNominations,
                 }),
             });
@@ -110,15 +109,6 @@ export default function CreatePollPage() {
                                 value={maxVotes}
                                 onChange={(e) => setMaxVotes(e.target.value)}
                                 placeholder="Total votes limit"
-                            />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Expires At (Optional)</label>
-                            <input
-                                className="input-field"
-                                type="datetime-local"
-                                value={expiresAt}
-                                onChange={(e) => setExpiresAt(e.target.value)}
                             />
                         </div>
                     </div>

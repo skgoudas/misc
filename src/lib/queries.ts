@@ -4,7 +4,7 @@ export interface Poll {
     id: number;
     title: string;
     maxVotes: number | null;
-    expiresAt: string | null;
+
     closedManually: number;
     createdAt: string;
 }
@@ -27,10 +27,10 @@ export interface Vote {
 }
 
 // Poll operations
-export async function createPoll(title: string, maxVotes: number | null, expiresAt: string | null) {
+export async function createPoll(title: string, maxVotes: number | null) {
     const result = await db.execute({
-        sql: 'INSERT INTO polls (title, max_votes, expires_at) VALUES (?, ?, ?)',
-        args: [title, maxVotes, expiresAt]
+        sql: 'INSERT INTO polls (title, max_votes) VALUES (?, ?)',
+        args: [title, maxVotes]
     });
     return Number(result.lastInsertRowid);
 }
@@ -42,7 +42,6 @@ export async function getPollById(id: number): Promise<Poll | null> {
       id, 
       title, 
       max_votes as maxVotes, 
-      expires_at as expiresAt,
       closed_manually as closedManually,
       created_at as createdAt 
     FROM polls WHERE id = ?
@@ -60,7 +59,6 @@ export async function getAllPolls(): Promise<Poll[]> {
       id, 
       title, 
       max_votes as maxVotes, 
-      expires_at as expiresAt,
       closed_manually as closedManually,
       created_at as createdAt 
     FROM polls 

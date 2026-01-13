@@ -22,8 +22,6 @@ export async function GET(
         let isClosed = false;
         if (poll.closedManually === 1) {
             isClosed = true;
-        } else if (poll.expiresAt && now > new Date(poll.expiresAt)) {
-            isClosed = true;
         } else if (poll.maxVotes && totalVotes >= poll.maxVotes) {
             isClosed = true;
         }
