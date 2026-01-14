@@ -27,8 +27,8 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
     if (loading) return <div className="container" style={{ textAlign: 'center', marginTop: '100px' }}>Loading Results...</div>;
     if (!poll) return <div className="container" style={{ textAlign: 'center' }}>Poll not found</div>;
 
-    // Find max average for progress calculation
-    const maxAvg = Math.max(...poll.nominations.map((n: any) => n.stats.average));
+    // Find max votes for progress calculation
+    const maxVotes = Math.max(...poll.nominations.map((n: any) => n.stats.voteCount), 1);
 
     return (
         <main className="container">
@@ -53,20 +53,20 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
                         <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                 <h3 style={{ margin: 0 }}>{nom.name}</h3>
-                                <span style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.2rem' }}>{nom.stats.average}</span>
+                                <span style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1.2rem' }}>{nom.stats.voteCount} Votes</span>
                             </div>
 
                             <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
                                 <div style={{
                                     height: '100%',
-                                    width: `${(nom.stats.average / 10) * 100}%`,
+                                    width: `${(nom.stats.voteCount / maxVotes) * 100}%`,
                                     background: 'linear-gradient(90deg, var(--primary), var(--accent))',
                                     borderRadius: '4px'
                                 }} />
                             </div>
 
                             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '6px' }}>
-                                Manager: {nom.manager} • {nom.stats.voteCount} votes • Total Score: {nom.stats.totalScore}
+                                Manager: {nom.manager}
                             </div>
                         </div>
                     </div>

@@ -121,7 +121,7 @@ export async function getNominationsWithStats(pollId: number): Promise<Nominatio
     LEFT JOIN votes v ON n.id = v.nomination_id
     WHERE n.poll_id = ?
     GROUP BY n.id
-    ORDER BY average DESC, totalScore DESC, n.name ASC
+    ORDER BY voteCount DESC, n.name ASC
   `,
         args: [pollId]
     });

@@ -4,15 +4,10 @@ import { getPollById, getVoteCountForNomination, createVote } from '@/lib/querie
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { pollId, nominationId, score } = body;
+        const { pollId, nominationId } = body;
 
-        if (!pollId || !nominationId || score === undefined) {
+        if (!pollId || !nominationId) {
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
-        }
-
-        // Check if valid score
-        if (score < 1 || score > 10) {
-            return NextResponse.json({ error: 'Score must be between 1 and 10' }, { status: 400 });
         }
 
         // Check if poll is open
@@ -28,10 +23,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Nomination has reached max votes' }, { status: 403 });
         }
 
-        // Create vote
-        const voteId = await createVote(pollId, nominationId, score);
+        // Create vote with fixed score of 1 using the simple vote system
+        const voteId = await createVote(pollId, nominationId, 1);
 
-        return NextResponse.json({ id: voteId, pollId, nominationId, score });
+        return NextResponse.json({ id: voteId, pollId, nominationId, score: 1 });
 
     } catch (error) {
         console.error('Error submitting vote:', error);

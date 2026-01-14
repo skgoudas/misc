@@ -9,6 +9,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
     const [poll, setPoll] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [votedNominations, setVotedNominations] = useState<string[]>([]);
+    const MAX_VOTES = 3;
 
     useEffect(() => {
         // Load local voted state
@@ -41,6 +42,9 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
     };
 
     const recordVote = (nominationId: string) => {
+        if (votedNominations.includes(nominationId)) return;
+        if (votedNominations.length >= MAX_VOTES) return;
+
         const newVal = [...votedNominations, nominationId];
         setVotedNominations(newVal);
         localStorage.setItem(`voted_${id}`, JSON.stringify(newVal));
@@ -49,13 +53,25 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
     if (loading) return <div className="container" style={{ textAlign: 'center', marginTop: '100px' }}>Loading Poll...</div>;
     if (!poll) return <div className="container" style={{ textAlign: 'center' }}>Poll not found</div>;
 
+    const votesRemaining = MAX_VOTES - votedNominations.length;
+
     return (
         <main className="container">
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                 <h1 style={{ fontSize: '2rem', marginBottom: '10px' }}>{poll.title}</h1>
                 <p style={{ color: 'var(--text-secondary)' }}>
-                    Rate the nominations below from 1 to 10.
+                    {votesRemaining > 0
+                        ? `You have ${votesRemaining} vote${votesRemaining !== 1 ? 's' : ''} remaining.`
+                        : "You have used all your votes."}
                 </p>
+                <div style={{ marginTop: '10px', height: '4px', width: '200px', background: 'var(--card-bg)', margin: '10px auto', borderRadius: '2px', overflow: 'hidden' }}>
+                    <div style={{
+                        height: '100%',
+                        width: `${(votedNominations.length / MAX_VOTES) * 100}%`,
+                        background: 'var(--primary)',
+                        transition: 'width 0.3s ease'
+                    }} />
+                </div>
             </div>
 
             <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
@@ -65,6 +81,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
                         nomination={nom}
                         pollId={poll.id}
                         isVoted={votedNominations.includes(nom.id)}
+                        canVote={votesRemaining > 0}
                         onVote={() => recordVote(nom.id)}
                     />
                 ))}
@@ -82,11 +99,12 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
     );
 }
 
-function VoteCard({ nomination, pollId, isVoted, onVote }: { nomination: any, pollId: string, isVoted: boolean, onVote: () => void }) {
-    const [score, setScore] = useState(5);
+function VoteCard({ nomination, pollId, isVoted, canVote, onVote }: { nomination: any, pollId: string, isVoted: boolean, canVote: boolean, onVote: () => void }) {
     const [submitting, setSubmitting] = useState(false);
 
     const handleVote = async () => {
+        if (!canVote) return;
+
         setSubmitting(true);
         try {
             const res = await fetch('/api/vote', {
@@ -95,7 +113,7 @@ function VoteCard({ nomination, pollId, isVoted, onVote }: { nomination: any, po
                 body: JSON.stringify({
                     pollId,
                     nominationId: nomination.id,
-                    score
+                    score: 1 // Default score for simple vote
                 }),
             });
 
@@ -113,44 +131,28 @@ function VoteCard({ nomination, pollId, isVoted, onVote }: { nomination: any, po
     };
 
     return (
-        <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', opacity: isVoted ? 0.6 : 1 }}>
+        <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', opacity: isVoted ? 0.8 : canVote ? 1 : 0.5 }}>
             <div>
                 <h3 style={{ marginBottom: '4px', fontSize: '1.25rem' }}>{nomination.name}</h3>
                 <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Manager: {nomination.manager}</p>
             </div>
 
             {!isVoted ? (
-                <>
-                    <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                            <span>Score</span>
-                            <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{score}</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="1"
-                            max="10"
-                            value={score}
-                            onChange={(e) => setScore(parseInt(e.target.value))}
-                            style={{ width: '100%', accentColor: 'var(--primary)' }}
-                        />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                            <span>1</span>
-                            <span>10</span>
-                        </div>
-                    </div>
-
-                    <button
-                        className="btn"
-                        onClick={handleVote}
-                        disabled={submitting}
-                        style={{ width: '100%', marginTop: 'auto' }}
-                    >
-                        {submitting ? 'Submitting...' : 'Submit Vote'}
-                    </button>
-                </>
+                <button
+                    className="btn"
+                    onClick={handleVote}
+                    disabled={submitting || !canVote}
+                    style={{
+                        width: '100%',
+                        marginTop: 'auto',
+                        opacity: canVote ? 1 : 0.5,
+                        cursor: canVote ? 'pointer' : 'not-allowed'
+                    }}
+                >
+                    {submitting ? 'Submitting...' : canVote ? 'Vote' : 'No Votes Left'}
+                </button>
             ) : (
-                <div style={{ marginTop: 'auto', textAlign: 'center', color: '#10b981', fontWeight: 600, padding: '12px' }}>
+                <div style={{ marginTop: 'auto', textAlign: 'center', color: '#10b981', fontWeight: 600, padding: '12px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px' }}>
                     ✓ Voted
                 </div>
             )}
